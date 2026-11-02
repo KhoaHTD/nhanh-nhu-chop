@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nhanh Như Chớp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="bg-grid"></div>
+  <canvas id="fx"></canvas>
+  <div id="flash"></div>
+
+  <!-- ===== MÀN HÌNH BẮT ĐẦU ===== -->
+  <section id="intro" class="screen active">
+    <div class="logo">
+      <span class="bolt">⚡</span>
+      <h1 class="title">NHANH NHƯ CHỚP</h1>
+      <span class="bolt flip">⚡</span>
+    </div>
+    <p class="tagline">Trả lời đúng – <b>ghế nâng lên!</b></p>
+    <input id="playerName" class="name-input" placeholder="Nhập tên người chơi" maxlength="30" autocomplete="off">
+    <button id="startBtn" class="btn big">BẮT ĐẦU ⚡</button>
+    <p class="hint">
+      <kbd>Space</kbd> chạy/dừng giờ · <kbd>A</kbd> hiện đáp án · <kbd>D</kbd> đúng · <kbd>S</kbd> sai ·
+      <kbd>Z</kbd> hoàn tác · <kbd>N</kbd> câu tiếp · <kbd>F</kbd> toàn màn hình · <kbd>H</kbd> ẩn bảng điều khiển
+    </p>
+  </section>
+
+  <!-- ===== MÀN HÌNH CHƠI ===== -->
+  <section id="game" class="screen">
+    <header class="topbar">
+      <div class="brand">⚡ NHANH NHƯ CHỚP</div>
+      <div class="dots" id="dots"></div>
+      <div class="player">👤 <span id="playerLabel"></span></div>
+    </header>
+
+    <main class="stage">
+      <div class="tower">
+        <div class="track" id="track">
+          <div class="pillar"></div>
+          <div class="lift" id="lift">
+            <svg class="chair" viewBox="0 0 100 100" aria-hidden="true">
+              <defs>
+                <radialGradient id="gAura">
+                  <stop offset="0" stop-color="#b6ff00" stop-opacity=".75"/>
+                  <stop offset=".55" stop-color="#39ff14" stop-opacity=".25"/>
+                  <stop offset="1" stop-color="#39ff14" stop-opacity="0"/>
+                </radialGradient>
+                <linearGradient id="gBolt" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#ffffff"/>
+                  <stop offset=".3" stop-color="#ffe600"/>
+                  <stop offset=".65" stop-color="#b6ff00"/>
+                  <stop offset="1" stop-color="#00c853"/>
+                </linearGradient>
+              </defs>
+              <circle class="aura" cx="50" cy="50" r="48" fill="url(#gAura)"/>
+              <g class="ring-spin">
+                <circle cx="50" cy="50" r="44" fill="none" stroke="#39ff14" stroke-width="2" stroke-dasharray="14 8 3 8"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#00e5ff" stroke-width="1" stroke-dasharray="2 6" opacity=".8"/>
+              </g>
+              <g class="arcs" fill="none" stroke="#eaffea" stroke-width="1.6" stroke-linejoin="round">
+                <polyline points="14,30 22,34 18,40 27,44"/>
+                <polyline points="86,62 78,58 83,52 73,49"/>
+                <polyline points="20,74 28,70 26,78 34,76"/>
+                <polyline points="80,24 72,28 76,20 68,22"/>
+              </g>
+              <path class="bolt-shape" d="M60 3 L24 54 L45 54 L36 97 L78 40 L56 40 L70 3 Z"
+                    fill="url(#gBolt)" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M60 10 L33 50 L42 50" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+            </svg>
+            <div class="platform"></div>
+          </div>
+        </div>
+        <div class="height-label">ĐỘ CAO <b id="levelNum">0</b><small>/10</small></div>
+      </div>
+
+      <div class="panel">
+        <div class="qcard" id="qcard">
+          <div class="qbadge">CÂU <span id="qNum">1</span><small>/<span id="qTotal">10</span></small></div>
+          <div class="timer" id="timer">
+            <svg viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="44"/>
+              <circle class="ring" id="ring" cx="50" cy="50" r="44"/>
+            </svg>
+            <span id="timeText">10</span>
+          </div>
+          <div class="qtext" id="qText"></div>
+          <img id="qImg" class="qimg" alt="" hidden>
+          <div class="answer" id="answer">
+            <span class="lbl">ĐÁP ÁN</span>
+            <span id="aText"></span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="controls" id="controls">
+      <button class="cbtn" id="timerBtn">▶ Chạy giờ <kbd>Space</kbd></button>
+      <button class="cbtn" id="revealBtn">👁 Đáp án <kbd>A</kbd></button>
+      <button class="cbtn ok" id="correctBtn">✔ ĐÚNG <kbd>D</kbd></button>
+      <button class="cbtn no" id="wrongBtn">✖ SAI <kbd>S</kbd></button>
+      <button class="cbtn" id="undoBtn">↶ Hoàn tác <kbd>Z</kbd></button>
+      <button class="cbtn next" id="nextBtn">Câu tiếp ➜ <kbd>N</kbd></button>
+    </footer>
+  </section>
+
+  <div class="stamp" id="stamp"></div>
+
+  <!-- ===== MÀN HÌNH KẾT THÚC ===== -->
+  <section id="end" class="screen">
+    <h2 class="end-title">🏆 KẾT THÚC 🏆</h2>
+    <p class="end-name" id="endName"></p>
+    <div class="end-score"><span id="endLevel">0</span><small>/10</small></div>
+    <p class="end-sub">độ cao của chiếc ghế</p>
+    <p class="end-msg" id="endMsg"></p>
+    <button id="replayBtn" class="btn big">CHƠI LẠI ⚡</button>
+  </section>
+
+  <script src="questions.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
