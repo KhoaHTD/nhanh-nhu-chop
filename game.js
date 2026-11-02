@@ -275,6 +275,9 @@
   /* ================= CỘT SỐ ================= */
   function buildTower() {
     el.tube.innerHTML = '';
+    const start = document.createElement('div');   // ô xuất phát (bậc 0)
+    start.className = 'cell start';
+    el.tube.appendChild(start);
     for (let i = 1; i <= LEVELS; i++) {
       const c = document.createElement('div');
       c.className = 'cell' + (i === LEVELS ? ' top' : '');
@@ -286,8 +289,8 @@
     const prev = state.level;
     state.level = lv;
     el.tower.style.setProperty('--lvl', lv);
-    el.tower.style.setProperty('--pos', lv === 0 ? 0 : lv - 0.5);
-    [...el.tube.children].forEach((c, i) => {
+    el.tower.style.setProperty('--pos', lv + 0.5);
+    [...el.tube.querySelectorAll('.cell:not(.start)')].forEach((c, i) => {
       c.classList.toggle('on', i < lv);
       if (animate && lv > prev && i === lv - 1) {
         c.classList.remove('just');
