@@ -50,6 +50,7 @@
   <!-- ===== MÀN HÌNH BẮT ĐẦU ===== -->
   <section id="intro" class="screen active">
     <div class="logo-badge big"><span class="l1">Nhanh như</span><span class="l2">Chớp</span></div>
+    <p class="subtitle" id="subtitle"></p>
     <p class="tagline">Trả lời đúng – <b>leo lên đỉnh!</b></p>
     <div class="setup">
       <label class="avatar-pick" title="Chọn ảnh người chơi">
@@ -61,7 +62,8 @@
     </div>
     <button id="startBtn" class="btn big">BẮT ĐẦU ⚡</button>
     <p class="hint">
-      <kbd>Space</kbd> chạy/dừng giờ · <kbd>A</kbd> hiện đáp án · <kbd>D</kbd> đúng · <kbd>S</kbd> sai ·
+      <kbd>Space</kbd> chạy/dừng giờ · <kbd>1</kbd>–<kbd>4</kbd> chốt đáp án A–D người chơi chọn ·
+      <kbd>A</kbd> hiện đáp án · <kbd>D</kbd> đúng · <kbd>S</kbd> sai ·
       <kbd>Z</kbd> hoàn tác · <kbd>N</kbd> câu tiếp · <kbd>F</kbd> toàn màn hình · <kbd>H</kbd> ẩn bảng điều khiển
     </p>
   </section>
@@ -85,13 +87,17 @@
       </div>
     </div>
 
-    <div class="stage-center"><img id="qImg" class="qimg" alt="" hidden></div>
+    <div class="stage-center">
+      <img id="qImg" class="qimg" alt="" hidden>
+      <div class="options" id="options"></div>
+    </div>
 
     <div class="lower">
       <div class="logo-badge"><span class="l1">Nhanh như</span><span class="l2">Chớp</span></div>
       <div class="qbar-area" id="qbarArea">
         <div class="tabs">
           <div class="tab name">👤 <span id="playerLabel"></span></div>
+          <div class="tab level" id="qLevel" hidden></div>
           <div class="tab qnum">CÂU <b id="qNum">1</b>/<span id="qTotal">10</span></div>
           <div class="timebox" id="timer"><span id="timeText">00:10</span></div>
         </div>

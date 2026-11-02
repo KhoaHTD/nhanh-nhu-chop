@@ -5,6 +5,7 @@
   const QS = (window.QUESTIONS || []).slice(0, 10);
   const TOTAL = QS.length;
   const LEVELS = 10;
+  const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
   const $ = (s) => document.querySelector(s);
   const el = {
@@ -13,6 +14,7 @@
     avatarFile: $('#avatarFile'), avatarPreview: $('#avatarPreview'), avatarImg: $('#avatarImg'), endAvatar: $('#endAvatar'),
     playerLabel: $('#playerLabel'), dots: $('#dots'),
     tower: $('#tower'), tube: $('#tube'), avatar: $('#avatar'),
+    subtitle: $('#subtitle'), options: $('#options'), qLevel: $('#qLevel'),
     qbar: $('#qbar'), qNum: $('#qNum'), qTotal: $('#qTotal'), qText: $('#qText'), qImg: $('#qImg'),
     answer: $('#answer'), aText: $('#aText'),
     timer: $('#timer'), timeText: $('#timeText'),
@@ -25,7 +27,9 @@
   const state = {
     screen: 'intro', idx: 0, level: 0, results: [], judged: false,
     msLeft: 0, timerId: null, lastSec: 0, name: '', avatar: null,
+    picked: null, pickTimer: null,
   };
+  el.subtitle.textContent = CFG.subtitle || '';
 
   /* ================= AVATAR NGƯỜI CHƠI ================= */
   function fillAvatar(box) {
@@ -105,6 +109,10 @@
       m.forEach((f, i) => { tone(f, t, d[i] + 0.1, 'square', 0.1); tone(f / 2, t, d[i] + 0.1, 'triangle', 0.08); t += d[i]; });
     },
     pop() { tone(600, 0, 0.12, 'sine', 0.1, 1200); },
+    drumroll() {
+      for (let i = 0; i < 16; i++) tone(95 + i * 4, i * 0.09, 0.08, 'triangle', 0.12 + i * 0.006);
+      noise(0, 1.5, 0.05);
+    },
   };
 
   /* ================= HIỆU ỨNG CANVAS ================= */
@@ -412,8 +420,25 @@
     el.qNum.textContent = state.idx + 1;
     el.qText.textContent = q.question;
     if (q.image) { el.qImg.src = q.image; el.qImg.hidden = false; } else { el.qImg.hidden = true; el.qImg.removeAttribute('src'); }
-    el.aText.textContent = q.answer;
+    el.aText.textContent = q.options ? LETTERS[q.correct] : q.answer;
     el.answer.classList.remove('show');
+
+    el.qLevel.hidden = !q.level;
+    el.qLevel.textContent = q.level || '';
+    const lv = (q.level || '').toLowerCase();
+    el.qLevel.className = 'tab level ' + (lv.includes('dễ') ? 'easy' : lv.includes('khó') ? 'hard' : 'mid');
+
+    clearTimeout(state.pickTimer);
+    state.picked = null;
+    el.options.innerHTML = '';
+    (q.options || []).forEach((text, i) => {
+      const o = document.createElement('div');
+      o.className = 'opt';
+      o.innerHTML = `<span class="key">${LETTERS[i]}</span><span class="otext"></span>`;
+      o.querySelector('.otext').textContent = text;
+      o.addEventListener('click', () => choose(i));
+      el.options.appendChild(o);
+    });
 
     el.qbar.classList.remove('enter');
     void el.qbar.offsetWidth;
@@ -428,7 +453,31 @@
     if (CFG.autoStartTimer) setTimeout(startTimer, 700);
   }
 
+  /* Người chơi chốt đáp án → hồi hộp → công bố đúng/sai */
+  function choose(i) {
+    const q = QS[state.idx];
+    if (state.screen !== 'game' || state.judged || state.picked !== null || !q.options || i >= q.options.length) return;
+    state.picked = i;
+    stopTimer();
+    el.options.children[i].classList.add('picked');
+    sfx.drumroll();
+    updateButtons();
+    state.pickTimer = setTimeout(() => judge(i === q.correct), 1600);
+  }
+
+  function markOptions() {
+    const q = QS[state.idx];
+    if (!q.options) return;
+    [...el.options.children].forEach((o, i) => {
+      o.classList.remove('picked');
+      o.classList.toggle('right', i === q.correct);
+      o.classList.toggle('wrong', i === state.picked && i !== q.correct);
+      o.classList.toggle('dim', i !== q.correct && i !== state.picked);
+    });
+  }
+
   function revealAnswer() {
+    markOptions();
     if (el.answer.classList.contains('show')) return;
     el.answer.classList.add('show');
     sfx.pop();
@@ -439,6 +488,7 @@
   function judge(ok) {
     if (state.screen !== 'game' || state.judged) return;
     state.judged = true;
+    clearTimeout(state.pickTimer);
     stopTimer();
     state.results[state.idx] = ok;
     revealAnswer();
@@ -467,10 +517,14 @@
   }
 
   function undo() {
-    if (state.screen !== 'game' || !state.judged) return;
-    if (state.results[state.idx] === true) setLevel(state.level - 1, true);
+    if (state.screen !== 'game' || !(state.judged || state.picked !== null)) return;
+    clearTimeout(state.pickTimer);
+    if (state.judged && state.results[state.idx] === true) setLevel(state.level - 1, true);
     state.results[state.idx] = undefined;
     state.judged = false;
+    state.picked = null;
+    el.answer.classList.remove('show');
+    [...el.options.children].forEach((o) => o.classList.remove('picked', 'right', 'wrong', 'dim'));
     updateDots();
     updateButtons();
   }
@@ -515,7 +569,7 @@
     el.revealBtn.disabled = el.answer.classList.contains('show');
     el.correctBtn.disabled = j;
     el.wrongBtn.disabled = j;
-    el.undoBtn.disabled = !j;
+    el.undoBtn.disabled = !j && state.picked === null;
     el.nextBtn.disabled = !j;
     el.nextBtn.innerHTML = (state.idx === TOTAL - 1 ? '🏁 Kết thúc' : 'Câu tiếp ➜') + ' <kbd>N</kbd>';
   }
@@ -548,6 +602,7 @@
     if (state.screen === 'end' && e.key === 'Enter') return showScreen('intro');
     if (state.screen !== 'game') return;
     if (e.code === 'Space') { e.preventDefault(); toggleTimer(); }
+    else if (/^[1-4]$/.test(e.key)) choose(Number(e.key) - 1);
     else if (k === 'a') { revealAnswer(); updateButtons(); }
     else if (k === 'd') judge(true);
     else if (k === 's') judge(false);
