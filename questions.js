@@ -6,11 +6,10 @@ window.GAME_CONFIG = {
 };
 
 // ====== DANH SÁCH 10 CÂU HỎI ======
-// Mỗi câu: { level, question, options: [A, B, C, D], correct: chỉ số đáp án đúng (0 = A, 1 = B, 2 = C, 3 = D) }
+// Mỗi câu: { question, options: [A, B, C, D], correct: chỉ số đáp án đúng (0 = A, 1 = B, 2 = C, 3 = D) }
 // Có thể thêm image: "duong-dan-anh.jpg" nếu muốn hiện ảnh.
 window.QUESTIONS = [
   {
-    level: 'Dễ',
     question: 'Biến đổi xã hội là gì?',
     options: [
       'Sự thay đổi của tự nhiên theo thời gian.',
@@ -21,19 +20,16 @@ window.QUESTIONS = [
     correct: 1
   },
   {
-    level: 'Dễ',
     question: 'Đặc điểm nào cho thấy mọi xã hội đều luôn vận động và thay đổi?',
     options: ['Tính phổ quát.', 'Tính ổn định.', 'Tính đồng nhất.', 'Tính khép kín.'],
     correct: 0
   },
   {
-    level: 'Trung bình',
     question: 'Chương trình chuyển đổi số quốc gia là ví dụ của dạng biến đổi nào?',
     options: ['Biến đổi không có kế hoạch.', 'Biến đổi ngoại xã hội.', 'Biến đổi có hoạch định.', 'Biến đổi tự phát.'],
     correct: 2
   },
   {
-    level: 'Trung bình',
     question: 'Yếu tố nào sau đây có thể thúc đẩy biến đổi xã hội?',
     options: [
       'Chỉ có yếu tố kinh tế.',
@@ -44,7 +40,6 @@ window.QUESTIONS = [
     correct: 3
   },
   {
-    level: 'Trung bình',
     question: 'Công nghiệp hóa – hiện đại hóa làm cơ cấu nghề nghiệp nông thôn thay đổi theo hướng nào?',
     options: [
       'Chỉ tập trung vào sản xuất nông nghiệp.',
@@ -55,7 +50,6 @@ window.QUESTIONS = [
     correct: 1
   },
   {
-    level: 'Trung bình',
     question: 'Chuyển đổi số giúp người nông dân thay đổi điều gì?',
     options: [
       'Chỉ sản xuất và bán hàng trong phạm vi địa phương.',
@@ -66,7 +60,6 @@ window.QUESTIONS = [
     correct: 2
   },
   {
-    level: 'Khó',
     question: 'Tại Đồng Tháp, mô hình Hội quán nông dân hoạt động theo nguyên tắc nào?',
     options: [
       '3 Không – 3 Tự – 3 Cùng.',
@@ -77,7 +70,6 @@ window.QUESTIONS = [
     correct: 0
   },
   {
-    level: 'Khó',
     question: 'Sự thay đổi nào thể hiện rõ nhất quá trình biến đổi thiết chế kinh tế ở Đồng Tháp?',
     options: [
       'Từ liên kết sản xuất sang sản xuất hoàn toàn độc lập.',
@@ -88,7 +80,6 @@ window.QUESTIONS = [
     correct: 3
   },
   {
-    level: 'Khó',
     question: 'Việc cha mẹ đi làm xa, con ở lại quê do ông bà chăm sóc phản ánh sự biến đổi nào?',
     options: [
       'Biến đổi phương thức tiêu thụ nông sản.',
@@ -99,7 +90,6 @@ window.QUESTIONS = [
     correct: 1
   },
   {
-    level: 'Khó',
     question: 'Thách thức xã hội nào có thể phát sinh từ quá trình chuyển đổi số ở nông thôn?',
     options: [
       'Tất cả người dân đều có khả năng tiếp cận công nghệ như nhau.',

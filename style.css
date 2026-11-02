@@ -23,15 +23,6 @@ body {
   font-family: 'Be Vietnam Pro', system-ui, sans-serif;
   user-select: none;
 }
-kbd {
-  display: inline-block;
-  padding: 0 5px;
-  border: 1px solid rgba(57, 255, 20, .5);
-  border-radius: 5px;
-  font: 700 .75em/1.4 monospace;
-  color: var(--lime);
-  background: rgba(57, 255, 20, .08);
-}
 
 /* ===== NỀN SÂN KHẤU LED ===== */
 .bg-stage {
@@ -172,7 +163,6 @@ kbd {
 @keyframes shine { to { background-position: 300% 0; } }
 @keyframes bob { 50% { translate: 0 -6px; } }
 
-.hint { margin-top: 5vh; max-width: 90vw; text-align: center; font-size: 14px; color: #8fbf8f; line-height: 2; }
 
 /* ===== AVATAR + TIA SÉT ===== */
 .avatar-ring {
@@ -256,12 +246,6 @@ kbd {
 @keyframes cellFlash {
   0% { transform: scaleX(1.5); background: #fff; box-shadow: 0 0 50px #fff, 0 0 80px var(--lime); }
   100% { transform: none; }
-}
-.cell.top::after {
-  content: '👑';
-  position: absolute; left: 100%; margin-left: 6px;
-  font-size: .8em;
-  filter: drop-shadow(0 0 6px var(--y));
 }
 
 .avatar {
@@ -452,12 +436,7 @@ kbd {
   max-width: 24vw;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.tab b { color: var(--y); }
-.tab.level { text-transform: uppercase; color: #031205; border-color: #fff; }
-.tab.level.easy { background: linear-gradient(180deg, var(--lime), var(--g)); }
-.tab.level.mid  { background: linear-gradient(180deg, #fff27a, var(--y)); }
-.tab.level.hard { background: linear-gradient(180deg, #ff7a7a, var(--r)); color: #fff; }
-.timebox {
+.tab b { color: var(--y); }.timebox {
   padding: 4px 20px 2px;
   font-family: 'Orbitron', monospace;
   font-weight: 900;
@@ -544,10 +523,8 @@ kbd {
 .cbtn:hover:not(:disabled) { background: rgba(57, 255, 20, .22); box-shadow: 0 0 16px rgba(57, 255, 20, .5); }
 .cbtn:disabled { opacity: .3; cursor: default; }
 .cbtn.ok { color: #031a03; background: var(--g); border-color: var(--lime); }
-.cbtn.ok kbd { color: #031a03; border-color: #031a03; }
 .cbtn.ok:hover:not(:disabled) { background: var(--lime); }
 .cbtn.no { color: #fff; background: #c41f1f; border-color: var(--r); }
-.cbtn.no kbd { color: #fff; border-color: #fff; }
 .cbtn.no:hover:not(:disabled) { background: var(--r); box-shadow: 0 0 16px var(--r); }
 .cbtn.next:not(:disabled) { border-color: var(--y); color: var(--y); }
 

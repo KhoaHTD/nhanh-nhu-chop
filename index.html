@@ -60,23 +60,18 @@
       </label>
       <input id="playerName" class="name-input" placeholder="Nhập tên người chơi" maxlength="30" autocomplete="off">
     </div>
-    <button id="startBtn" class="btn big">BẮT ĐẦU ⚡</button>
-    <p class="hint">
-      <kbd>Space</kbd> chạy/dừng giờ · <kbd>1</kbd>–<kbd>4</kbd> chốt đáp án A–D người chơi chọn ·
-      <kbd>A</kbd> hiện đáp án · <kbd>D</kbd> đúng · <kbd>S</kbd> sai ·
-      <kbd>Z</kbd> hoàn tác · <kbd>N</kbd> câu tiếp · <kbd>F</kbd> toàn màn hình · <kbd>H</kbd> ẩn bảng điều khiển
-    </p>
+    <button id="startBtn" class="btn big">BẮT ĐẦU</button>
   </section>
 
   <!-- ===== MÀN HÌNH CHƠI ===== -->
   <section id="game" class="screen">
     <div class="controls" id="controls">
-      <button class="cbtn" id="timerBtn">▶ Chạy giờ <kbd>Space</kbd></button>
-      <button class="cbtn" id="revealBtn">👁 Đáp án <kbd>A</kbd></button>
-      <button class="cbtn ok" id="correctBtn">✔ ĐÚNG <kbd>D</kbd></button>
-      <button class="cbtn no" id="wrongBtn">✖ SAI <kbd>S</kbd></button>
-      <button class="cbtn" id="undoBtn">↶ <kbd>Z</kbd></button>
-      <button class="cbtn next" id="nextBtn">Câu tiếp ➜ <kbd>N</kbd></button>
+      <button class="cbtn" id="timerBtn">Chạy giờ</button>
+      <button class="cbtn" id="revealBtn">Đáp án</button>
+      <button class="cbtn ok" id="correctBtn">ĐÚNG</button>
+      <button class="cbtn no" id="wrongBtn">SAI</button>
+      <button class="cbtn" id="undoBtn">Hoàn tác</button>
+      <button class="cbtn next" id="nextBtn">Câu tiếp</button>
     </div>
     <div class="dots" id="dots"></div>
 
@@ -96,8 +91,7 @@
       <div class="logo-badge"><span class="l1">Nhanh như</span><span class="l2">Chớp</span></div>
       <div class="qbar-area" id="qbarArea">
         <div class="tabs">
-          <div class="tab name">👤 <span id="playerLabel"></span></div>
-          <div class="tab level" id="qLevel" hidden></div>
+          <div class="tab name"><span id="playerLabel"></span></div>
           <div class="tab qnum">CÂU <b id="qNum">1</b>/<span id="qTotal">10</span></div>
           <div class="timebox" id="timer"><span id="timeText">00:10</span></div>
         </div>
@@ -111,13 +105,13 @@
 
   <!-- ===== MÀN HÌNH KẾT THÚC ===== -->
   <section id="end" class="screen">
-    <h2 class="end-title">🏆 KẾT THÚC 🏆</h2>
+    <h2 class="end-title">KẾT THÚC</h2>
     <div class="avatar-ring end-avatar"><div class="avatar-img" id="endAvatar"></div></div>
     <p class="end-name" id="endName"></p>
     <div class="end-score"><span id="endLevel">0</span><small>/10</small></div>
     <p class="end-sub">bậc đã leo được</p>
     <p class="end-msg" id="endMsg"></p>
-    <button id="replayBtn" class="btn big">CHƠI LẠI ⚡</button>
+    <button id="replayBtn" class="btn big">CHƠI LẠI</button>
   </section>
 
   <script src="questions.js"></script>

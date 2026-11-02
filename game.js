@@ -14,7 +14,7 @@
     avatarFile: $('#avatarFile'), avatarPreview: $('#avatarPreview'), avatarImg: $('#avatarImg'), endAvatar: $('#endAvatar'),
     playerLabel: $('#playerLabel'), dots: $('#dots'),
     tower: $('#tower'), tube: $('#tube'), avatar: $('#avatar'),
-    subtitle: $('#subtitle'), options: $('#options'), qLevel: $('#qLevel'),
+    subtitle: $('#subtitle'), options: $('#options'),
     qbar: $('#qbar'), qNum: $('#qNum'), qTotal: $('#qTotal'), qText: $('#qText'), qImg: $('#qImg'),
     answer: $('#answer'), aText: $('#aText'),
     timer: $('#timer'), timeText: $('#timeText'),
@@ -332,7 +332,7 @@
     [...el.dots.children].forEach((d, i) => {
       const r = state.results[i];
       d.className = 'dot' + (r === true ? ' ok' : r === false ? ' no' : i === state.idx ? ' cur' : '');
-      d.textContent = r === true ? '✔' : r === false ? '✖' : i + 1;
+      d.textContent = i + 1;
     });
   }
 
@@ -342,8 +342,7 @@
     el.timeText.textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
     el.timer.classList.toggle('warn', state.msLeft > 0 && sec <= 3);
     el.timer.classList.toggle('running', !!state.timerId);
-    el.timerBtn.textContent = '';
-    el.timerBtn.insertAdjacentHTML('beforeend', (state.timerId ? '⏸ Dừng giờ' : '▶ Chạy giờ') + ' <kbd>Space</kbd>');
+    el.timerBtn.textContent = state.timerId ? 'Dừng giờ' : 'Chạy giờ';
   }
   function startTimer() {
     if (state.judged || state.timerId || state.msLeft <= 0) return;
@@ -423,10 +422,6 @@
     el.aText.textContent = q.options ? LETTERS[q.correct] : q.answer;
     el.answer.classList.remove('show');
 
-    el.qLevel.hidden = !q.level;
-    el.qLevel.textContent = q.level || '';
-    const lv = (q.level || '').toLowerCase();
-    el.qLevel.className = 'tab level ' + (lv.includes('dễ') ? 'easy' : lv.includes('khó') ? 'hard' : 'mid');
 
     clearTimeout(state.pickTimer);
     state.picked = null;
@@ -546,11 +541,11 @@
     el.endName.textContent = state.name;
     el.endLevel.textContent = lv;
     el.endMsg.textContent =
-      lv === LEVELS ? '🔥 HOÀN HẢO! Đã chạm đỉnh cột! 🔥' :
-      lv >= 8 ? 'Xuất sắc! Nhanh như chớp thật sự! ⚡' :
-      lv >= 5 ? 'Rất tốt! Đã leo khá cao! 💪' :
-      lv >= 1 ? 'Cố gắng lên, lần sau sẽ cao hơn! 🌱' :
-      'Vẫn chưa leo được bậc nào… thử lại nhé! 😅';
+      lv === LEVELS ? 'Hoàn hảo! Đã chạm đỉnh cột!' :
+      lv >= 8 ? 'Xuất sắc! Nhanh như chớp thật sự!' :
+      lv >= 5 ? 'Rất tốt! Đã leo khá cao!' :
+      lv >= 1 ? 'Cố gắng lên, lần sau sẽ cao hơn!' :
+      'Vẫn chưa leo được bậc nào, thử lại nhé!';
     sfx.win();
     flash('white');
     confetti(150, 0, H);
@@ -571,7 +566,7 @@
     el.wrongBtn.disabled = j;
     el.undoBtn.disabled = !j && state.picked === null;
     el.nextBtn.disabled = !j;
-    el.nextBtn.innerHTML = (state.idx === TOTAL - 1 ? '🏁 Kết thúc' : 'Câu tiếp ➜') + ' <kbd>N</kbd>';
+    el.nextBtn.textContent = state.idx === TOTAL - 1 ? 'Kết thúc' : 'Câu tiếp';
   }
 
   function toggleFullscreen() {
