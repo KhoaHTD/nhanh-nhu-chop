@@ -5,17 +5,17 @@
   const QS = (window.QUESTIONS || []).slice(0, 10);
   const TOTAL = QS.length;
   const LEVELS = 10;
-  const RING_LEN = 276.46;
 
   const $ = (s) => document.querySelector(s);
   const el = {
     intro: $('#intro'), game: $('#game'), end: $('#end'),
     name: $('#playerName'), startBtn: $('#startBtn'), replayBtn: $('#replayBtn'),
+    avatarFile: $('#avatarFile'), avatarPreview: $('#avatarPreview'), avatarImg: $('#avatarImg'), endAvatar: $('#endAvatar'),
     playerLabel: $('#playerLabel'), dots: $('#dots'),
-    track: $('#track'), lift: $('#lift'), levelNum: $('#levelNum'),
-    qcard: $('#qcard'), qNum: $('#qNum'), qTotal: $('#qTotal'), qText: $('#qText'), qImg: $('#qImg'),
+    tower: $('#tower'), tube: $('#tube'), avatar: $('#avatar'),
+    qbar: $('#qbar'), qNum: $('#qNum'), qTotal: $('#qTotal'), qText: $('#qText'), qImg: $('#qImg'),
     answer: $('#answer'), aText: $('#aText'),
-    timer: $('#timer'), ring: $('#ring'), timeText: $('#timeText'),
+    timer: $('#timer'), timeText: $('#timeText'),
     stamp: $('#stamp'), flash: $('#flash'), controls: $('#controls'),
     timerBtn: $('#timerBtn'), revealBtn: $('#revealBtn'), correctBtn: $('#correctBtn'),
     wrongBtn: $('#wrongBtn'), undoBtn: $('#undoBtn'), nextBtn: $('#nextBtn'),
@@ -24,8 +24,32 @@
 
   const state = {
     screen: 'intro', idx: 0, level: 0, results: [], judged: false,
-    msLeft: 0, timerId: null, lastSec: 0, name: '',
+    msLeft: 0, timerId: null, lastSec: 0, name: '', avatar: null,
   };
+
+  /* ================= AVATAR NGƯỜI CHƠI ================= */
+  function fillAvatar(box) {
+    box.innerHTML = '';
+    if (state.avatar) {
+      const img = document.createElement('img');
+      img.src = state.avatar;
+      img.alt = '';
+      box.appendChild(img);
+    } else {
+      box.appendChild($('#boltTpl').content.cloneNode(true));
+    }
+  }
+  function refreshAvatars() {
+    [el.avatarPreview, el.avatarImg, el.endAvatar].forEach(fillAvatar);
+  }
+  el.avatarFile.addEventListener('change', () => {
+    const f = el.avatarFile.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { state.avatar = r.result; refreshAvatars(); };
+    r.readAsDataURL(f);
+  });
+  refreshAvatars();
 
   /* ================= ÂM THANH (tự tổng hợp, không cần file) ================= */
   const audio = {
@@ -240,37 +264,51 @@
     node.classList.add('shake');
   }
 
-  /* ================= THÁP GHẾ ================= */
+  /* ================= CỘT SỐ ================= */
   function buildTower() {
-    el.track.querySelectorAll('.mark').forEach((m) => m.remove());
+    el.tube.innerHTML = '';
     for (let i = 1; i <= LEVELS; i++) {
-      const m = document.createElement('div');
-      m.className = 'mark' + (i === LEVELS ? ' top' : '');
-      m.style.setProperty('--i', i);
-      m.innerHTML = `<span>${i}</span>`;
-      el.track.insertBefore(m, el.lift);
+      const c = document.createElement('div');
+      c.className = 'cell' + (i === LEVELS ? ' top' : '');
+      c.textContent = i;
+      el.tube.appendChild(c);
     }
   }
   function setLevel(lv, animate) {
+    const prev = state.level;
     state.level = lv;
-    el.track.style.setProperty('--lvl', lv);
-    el.track.querySelectorAll('.mark').forEach((m, i) => m.classList.toggle('on', i < lv));
-    el.levelNum.textContent = lv;
-    if (animate) {
-      el.levelNum.classList.remove('pop');
-      void el.levelNum.offsetWidth;
-      el.levelNum.classList.add('pop');
-    }
+    el.tower.style.setProperty('--lvl', lv);
+    el.tower.style.setProperty('--pos', lv === 0 ? 0 : lv - 0.5);
+    [...el.tube.children].forEach((c, i) => {
+      c.classList.toggle('on', i < lv);
+      if (animate && lv > prev && i === lv - 1) {
+        c.classList.remove('just');
+        void c.offsetWidth;
+        c.classList.add('just');
+      }
+    });
   }
-  function boostLift() {
-    el.lift.classList.add('boost');
+  function boostAvatar() {
+    el.avatar.classList.add('boost');
     setTimeout(() => {
-      el.lift.classList.remove('boost');
-      const r = el.lift.getBoundingClientRect();
+      el.avatar.classList.remove('boost');
+      const r = el.avatar.getBoundingClientRect();
       burst(r.left + r.width / 2, r.top + r.height / 2, 120);
       sfx.pop();
     }, 1300);
   }
+
+  /* Thu nhỏ chữ câu hỏi cho vừa thanh */
+  function fitText() {
+    const t = el.qText;
+    let size = Math.min(56, el.qbar.clientHeight * 0.42);
+    t.style.fontSize = size + 'px';
+    while (size > 14 && (t.scrollHeight > t.clientHeight || t.scrollWidth > t.clientWidth)) {
+      size -= 1;
+      t.style.fontSize = size + 'px';
+    }
+  }
+  addEventListener('resize', () => { if (state.screen === 'game') fitText(); });
 
   /* ================= TIẾN TRÌNH (CHẤM TRÒN) ================= */
   function buildDots() {
@@ -292,10 +330,8 @@
 
   /* ================= ĐỒNG HỒ ================= */
   function renderTimer() {
-    const total = CFG.timePerQuestion * 1000;
     const sec = Math.ceil(state.msLeft / 1000);
-    el.timeText.textContent = sec;
-    el.ring.style.strokeDashoffset = RING_LEN * (1 - state.msLeft / total);
+    el.timeText.textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
     el.timer.classList.toggle('warn', state.msLeft > 0 && sec <= 3);
     el.timer.classList.toggle('running', !!state.timerId);
     el.timerBtn.textContent = '';
@@ -354,6 +390,7 @@
     state.results = [];
     el.playerLabel.textContent = state.name;
     el.qTotal.textContent = TOTAL;
+    refreshAvatars();
     buildTower();
     buildDots();
     setLevel(0);
@@ -378,9 +415,10 @@
     el.aText.textContent = q.answer;
     el.answer.classList.remove('show');
 
-    el.qcard.classList.remove('enter');
-    void el.qcard.offsetWidth;
-    el.qcard.classList.add('enter');
+    el.qbar.classList.remove('enter');
+    void el.qbar.offsetWidth;
+    el.qbar.classList.add('enter');
+    fitText();
     sfx.whoosh();
     lightning();
 
@@ -414,15 +452,15 @@
       confetti(110, 0, H);
       confetti(110, W, H);
       setLevel(state.level + 1, true);
-      boostLift();
+      boostAvatar();
     } else {
       sfx.wrong();
       flash('red');
       stamp('SAI RỒI!', 'no');
       shake(el.game);
-      el.lift.classList.remove('sad');
-      void el.lift.offsetWidth;
-      el.lift.classList.add('sad');
+      el.avatar.classList.remove('sad');
+      void el.avatar.offsetWidth;
+      el.avatar.classList.add('sad');
     }
     updateDots();
     updateButtons();
@@ -454,11 +492,11 @@
     el.endName.textContent = state.name;
     el.endLevel.textContent = lv;
     el.endMsg.textContent =
-      lv === LEVELS ? '🔥 HOÀN HẢO! Ghế đã chạm đỉnh! 🔥' :
+      lv === LEVELS ? '🔥 HOÀN HẢO! Đã chạm đỉnh cột! 🔥' :
       lv >= 8 ? 'Xuất sắc! Nhanh như chớp thật sự! ⚡' :
-      lv >= 5 ? 'Rất tốt! Ghế đã lên khá cao! 💪' :
+      lv >= 5 ? 'Rất tốt! Đã leo khá cao! 💪' :
       lv >= 1 ? 'Cố gắng lên, lần sau sẽ cao hơn! 🌱' :
-      'Ghế vẫn chưa nhúc nhích… thử lại nhé! 😅';
+      'Vẫn chưa leo được bậc nào… thử lại nhé! 😅';
     sfx.win();
     flash('white');
     confetti(150, 0, H);
