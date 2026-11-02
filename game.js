@@ -489,7 +489,12 @@
     clearTimeout(state.pickTimer);
     stopTimer();
     state.results[state.idx] = ok;
-    revealAnswer();
+    if (ok) revealAnswer();
+    else if (state.picked !== null) {   // sai: chỉ tô đỏ ô đã chọn, giữ kín đáp án đến khi host bấm "Đáp án"
+      const o = el.options.children[state.picked];
+      o.classList.remove('picked');
+      o.classList.add('wrong');
+    }
 
     if (ok) {
       sfx.correct();
